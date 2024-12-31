@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/hotel;hotel";
+
+import "google/protobuf/timestamp.proto";
+
+// 定义分时预约服务
+service HotelService {
+  // 按酒店区分指标数据
+  rpc RmSaleReportList (RmSaleReportListRequest) returns (RmSaleReportListResponse) {}
+
+  // 酒店每日指标数据
+  rpc RmSaleReportDateList (RmSaleReportListRequest) returns (RmSaleReportDateListResponse) {}
+
+  // 酒店预定来源统计
+  rpc RevenueReportSummary (RevenueReportSummaryRequest) returns (RevenueReportSummaryResponse) {}
+
+  // 酒店入住人数
+  rpc Occupancy (OccupancyRequest) returns (OccupancyResponse) {}
+
+  // 酒店订单统计数据
+  rpc RmOrderDateList (RmOrderDateListRequest) returns (RmOrderDateListResponse) {}
+}
+
+// 定义 RmSaleReportListRequest 消息
+message RmSaleReportListRequest {
+  repeated int64 sid = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+}
+
+// 定义 RmSaleReportListResponse 消息
+message RmSaleReportListResponse {
+  RmSaleReportTotal total = 1;
+  repeated RmSaleReportListData list = 2;
+}
+
+message RmSaleReportTotal {
+  double  roomsTotal = 1;
+  double roomsOoo = 2;
+  double roomsOs = 3;
+  double roomsHse = 4;
+  double roomsAvl = 5;
+  double roomsVac = 6;
+  double soldFit = 7;
+  double soldGrp = 8;
+  double soldLong = 9;
+  double soldEnt = 10;
+  double revFit = 11;
+  double revGrp = 12;
+  double revLong = 13;
+  int64 peopleFit = 14;
+  int64 peopleGrp = 15;
+  int64 peopleLong = 16;
+
+}
+
+message RmSaleReportListData {
+  int64 bindId = 1;
+  string name = 2;
+  RmSaleReportTotal total = 3;
+}
+
+// 定义 RmSaleReportDateListRequest 消息
+message RmSaleReportDateListResponse {
+  RmSaleReportTotal total = 1;
+  repeated RmSaleReportDateListData list = 2;
+}
+
+message RmSaleReportDateListData{
+  string date = 1;
+  RmSaleReportTotal total = 2;
+}
+
+
+// 定义 RevenueReportSummaryRequest 消息
+message RevenueReportSummaryRequest {
+  repeated int64 sid = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+  repeated string  codeCategory = 4;
+}
+
+// 定义 RevenueReportSummaryResponse 消息
+message RevenueReportSummaryResponse {
+  RevenueReportTotal total = 1;
+  repeated RevenueReportData list = 2;
+}
+
+message RevenueReportTotal {
+  double revTotal = 1;
+  double revRm = 2;
+  double revFb = 3;
+  double revMt = 4;
+  double revEn = 5;
+  double revSp = 6;
+  double revOt = 7;
+  double roomsTotal = 8;
+  double roomsArr = 9;
+  double roomsDep = 10;
+  int64 roomsNoShow = 11;
+  int64 roomsCxl = 12;
+  int64 people = 13;
+  int64 peopleArr = 14;
+  int64 peopleDep = 15;
+}
+
+message RevenueReportData {
+  string codeCategory = 1;
+  string codeCategoryDes = 2;
+  RevenueReportTotal total = 3;
+}
+
+// 定义 OccupancyRequest 消息
+message OccupancyRequest {
+  repeated int64 sid = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+}
+
+// 定义 OccupancyResponse 消息
+message OccupancyResponse {
+  int64 occupancy = 1;
+}
+
+// 定义 RmOrderDateListRequest 消息
+message RmOrderDateListRequest {
+  repeated int64 sid = 1;
+  google.protobuf.Timestamp start = 2;
+  google.protobuf.Timestamp end = 3;
+}
+
+// 定义 RmOrderDateListResponse 消息
+message RmOrderDateListResponse {
+  repeated RmOrderDateListData list = 1;
+  RmOrderDateTotal total = 2;
+}
+
+message RmOrderDateListData {
+  string date = 1;
+  RmOrderDateTotal total = 2;
+}
+
+message RmOrderDateTotal {
+  int64 bookingCount = 1;
+  int64 bookingRoomNum = 2;
+  int64 bookingAdult = 3;
+  int64 bookingChildren = 4;
+  int64 bookingPeople = 5;
+  int64 bookingCharge = 6;
+  int64 bookingPay = 7;
+  int64 checkInCount = 8;
+  int64 checkInRoomNum = 9;
+  int64 checkInAdult = 10;
+  int64 checkInChildren = 11;
+  int64 checkInPeople = 12;
+  int64 checkInCharge = 13;
+  int64 checkInPay = 14;
+}

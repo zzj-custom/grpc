@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+import "cmd/odas/grpc/common.proto";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/report;report";
+
+// 定义渠道服务
+service ReportService {
+  // 获取验证数
+  rpc VerifiedSummary (VerifiedSummaryRequest) returns (OrderSummaryV4) {}
+
+  // 获取时间段分销商分组的订单和验证数据
+  rpc DistributorOrderSummary (DistributorOrderSummaryRequest) returns (DistributorOrderSummaryResponse) {}
+
+  // 获取年卡排行数据
+  rpc AnnualCardRank (AnnualCardRankRequest) returns (AnnualCardRankResponse) {}
+
+  // 获取分终端数据
+  rpc TerminalSummary (AnnualCardRankRequest) returns (TerminalSummaryResponse) {}
+
+  // 获取票数据列表的订单数据
+  rpc TicketList (ReportTicketListRequest) returns (ReportTicketListResponse) {}
+}
+
+// 定义 VerifiedSummaryRequest 消息
+message VerifiedSummaryRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  repeated int64 excludeLids = 2;
+}
+
+// 定义 VerifiedSummaryByLidRequest 消息
+message VerifiedSummaryByLidRequest {
+  // 字段
+  repeated int64 lid = 1;
+  int64 sid = 2;
+  int64 orderType = 3;
+}
+
+
+message DistributorOrderSummaryRequest{
+  PassedTimeSpanRequest request = 1;
+  int64 page = 2;
+  int64 pageSize = 3;
+}
+
+message DistributorOrderSummaryResponse{
+  repeated DistributorOrderSummaryList List = 1;
+  Pagination pagination = 2;
+}
+
+message DistributorOrderSummaryList{
+  int64 distributorId = 1;
+  string distributorName = 2;
+  int64 paidAmount = 3;
+  int64 paidTicketCount = 4;
+  int64 verifyAmount = 5;
+  int64 verifyTicketCount = 6;
+  int64 cancelAmount = 7;
+  int64 cancelTicketCount = 8;
+}
+
+message AnnualCardRankRequest{
+  PassedTimeSpanV4Request request = 1;
+  int64 limit = 2;
+}
+
+message AnnualCardRankResponse{
+  AnnualCardRankSummary total = 1;
+  repeated AnnualCardRankList list = 2;
+}
+
+message AnnualCardRankList{
+  int64 ticketId = 1;
+  string ticketName = 2;
+  AnnualCardRankSummary summary = 3;
+}
+
+message AnnualCardRankSummary {
+  int64 orderNum = 1;
+  int64 orderTicket = 2;
+  int64 orderCostMoney = 3;
+  int64 orderSaleMoney = 4;
+  int64 cancelNum = 5;
+  int64 cancelTicket = 6;
+  int64 cancelCostMoney = 7;
+  int64 cancelSaleMoney = 8;
+  int64 verifyNum = 9;
+  int64 verifyTicket = 10;
+  int64 verifyCostMoney = 11;
+  int64 verifySaleMoney = 12;
+  int64 saleOrderNum = 13;
+  int64 saleOrderTicket = 14;
+  int64 saleOrderCostMoney = 15;
+  int64 saleOrderSaleMoney = 16;
+  int64 renewOrderNum = 17;
+  int64 renewOrderTicket = 18;
+  int64 renewOrderCostMoney = 19;
+  int64 renewOrderSaleMoney = 20;
+  int64 adjustOrderNum = 21;
+  int64 adjustOrderTicket = 22;
+  int64 adjustOrderCostMoney = 23;
+  int64 adjustOrderSaleMoney = 24;
+  int64 activateOrderNum = 25;
+  int64 activateOrderTicket = 26;
+  int64 activateOrderCostMoney = 27;
+  int64 activateOrderSaleMoney = 28;
+}
+
+message TerminalSummaryResponse {
+  TerminalSummary total = 1;
+  repeated TerminalSummaryList list = 2;
+}
+
+message  TerminalSummary  {
+  int64   checkOrders = 1;
+  int64    checkTickets = 2;
+  int64    checkPeople = 3;
+}
+
+message TerminalSummaryList  {
+  int64 terminalId = 1;
+  string terminalName = 2;
+  TerminalSummary terminalSummary = 3;
+}
+
+message ReportTicketListRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  int64 limit = 2;
+  repeated int64 ticketId = 3;
+}
+
+message ReportTicketListResponse {
+  OrderSummaryV4 total = 1;
+  repeated TicketListData list = 2;
+}
+
+message TicketListData {
+  int64 ticketId = 1;
+  string ticketName = 2;
+  OrderSummaryV4 summary = 3;
+}

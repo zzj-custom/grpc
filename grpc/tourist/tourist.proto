@@ -1,0 +1,300 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "cmd/odas/grpc/common.proto";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/tourist;tourist";
+
+// 定义渠道服务
+service TouristService {
+  // 获取按时间分组的出入园数据
+  rpc SummaryByTime (TouristSummaryRequest) returns (TouristSummaryResponse) {}
+
+  // 按天获取出入园数据
+  rpc SummaryByDate (TouristSummaryRequest) returns (TouristSummaryResponse) {}
+
+  // 客流预测每日以及今，明，后天数据
+  rpc ForecastPassengerFlowList (PassedTimeSpanByOrderTypeV4Request) returns (ForecastPassengerFlowListResponse) {}
+
+  // 供应商维度客流来源TopN
+  rpc TouristLocal (TouristLocalRequest) returns (TouristLocalResponse) {}
+
+  // 每日客流数据(供应商维度)
+  rpc PassengerFlow (TouristStartEndRequest) returns (PassengerFlowResponse) {}
+
+  // 获取统计组
+  rpc GroupList (GroupListRequest) returns (GroupListResponse) {}
+
+  // 实时客流统计
+  rpc InOutStat (InOutStatRequest) returns (InOutStatResponse) {}
+
+  // 创建出入园统计组
+  rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse) {}
+
+  // 更新出入园统计组
+  rpc UpdateGroup (UpdateGroupRequest) returns (Response) {}
+
+  // 根据id查询统计组信息
+  rpc GroupById (GroupByIdRequest) returns (GroupListData) {}
+
+  // 批量统计组获取出入园数据
+  rpc InoutByGroups (InoutByGroupsRequest) returns (InoutByGroupsResponse) {}
+
+  // 终端管理出入、验证数据查询
+  rpc DeviceJournalStat(DeviceJournalStatRequest) returns (DeviceJournalStatResponse) {}
+
+  // 实时对比客流数据
+  rpc InOutCompareFlow (InOutCompareRequest) returns (InoutCompareResponse) {}
+}
+
+// 定义summary的请求参数和响应
+message TouristSummaryRequest {
+  PassedTimeSpan request = 1;
+  int64 sid = 2;
+  repeated int64 gid = 3;
+  bool noAmend = 4;
+}
+
+message TouristSummaryResponse {
+  SummaryTotal total = 1;
+  repeated SummaryList list = 2;
+}
+
+message SummaryTotal {
+  int64 in = 1;
+  int64 out = 2;
+  int64 hold = 3;
+}
+
+message SummaryList {
+  string time = 1;
+  int64 in = 2;
+  int64 out = 3;
+}
+
+// 定义StartEndRequest消息
+message  TouristStartEndRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  bool unknown = 2;
+}
+
+// ForecastPassengerFlowListBySid 响应体
+message ForecastPassengerFlowListResponse {
+  FlowForecastTotal total = 1;
+  repeated FlowForecastDetail detail = 2;
+}
+
+message FlowForecastTotal {
+  int64 todayFlow = 1;
+  int64 tomorrowFlow = 2;
+  int64 thirdDayFlow = 3;
+}
+
+message FlowForecastDetail {
+  string timeRange = 1;
+  int64 count = 2;
+}
+
+// TouristLocalBySid 请求参数
+message TouristLocalRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  string province = 2;
+  int64 limit = 3;
+  bool unknown = 4;
+}
+
+//  TouristLocalBySid 响应体
+message TouristLocalResponse {
+  LocalTotal  total = 1;
+  repeated InsideList  inside = 2;
+  repeated OutsideList outside = 3;
+}
+
+message LocalTotal {
+  int64 insideProvince = 1;
+  double insideRate = 2;
+  int64 outsideProvince = 3;
+  double outsideRate = 4;
+}
+
+message InsideList {
+  string city = 1;
+  int64 count = 2;
+  double rate = 3;
+}
+
+message OutsideList {
+  string province = 1;
+  int64 count = 2;
+  double rate = 3;
+}
+
+// 每日客流数据响应体
+message PassengerFlowResponse {
+  int64 total = 1;
+  repeated PassengerFlowList list = 2;
+}
+
+message PassengerFlowList {
+  int64 count = 1;
+  int64 date = 2;
+}
+
+// 定义summary的请求参数和响应
+message GroupListRequest {
+  int64 sid = 1;
+}
+
+message GroupListResponse {
+  repeated GroupListData list = 1;
+}
+
+message GroupListData {
+  int64 id = 1;
+  int64 sid = 2;
+  string serialNo = 3;
+  string name = 4;
+  repeated string gates = 5;
+  int64 capacity = 6;
+  int64 upperLimit = 7;
+  repeated GroupConfig config = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
+}
+
+message GroupConfig{
+  string label = 1;
+  int64 min = 2;
+  int64 max = 3;
+  string color = 4;
+}
+
+// 按闸机查询出入园数据
+message InOutStatRequest {
+  string date = 1;
+  int64 sid = 2;
+  repeated string devices = 3;
+  int64 hour = 4;
+}
+
+// 闸机出入园数据
+message InOutStatDO {
+  int64 in = 1;
+  int64 out = 2;
+  int64 employee = 3;
+}
+
+// 闸机出入园汇总数据
+message InOutSummaryStatDO {
+  int64 in = 1;
+  int64 out = 2;
+  int64 employee = 3;
+  int64 hold = 4;
+}
+
+// 按闸机查询出入园数据响应体
+message InOutStatResponse {
+  InOutSummaryStatDO total = 1;
+  map<string, InOutStatDO> list = 2;
+}
+
+message CreateGroupRequest {
+  int64 sid = 1;
+  string name = 2;
+  repeated string gates = 3;
+  int64 capacity = 4;
+  int64 UpperLimit = 5;
+  repeated GroupConfig config = 6;
+}
+
+message CreateGroupResponse {
+  int64 id = 1;
+  int64 sid = 2;
+  string serialNo = 3;
+  string name = 4;
+}
+
+message UpdateGroupRequest {
+  int64 id = 1;
+  string name = 2;
+  repeated string gates = 3;
+  int64 capacity = 4;
+  int64 UpperLimit = 5;
+  repeated GroupConfig config = 6;
+}
+
+message GroupByIdRequest {
+  int64 id = 1;
+}
+
+message InoutByGroupsRequest{
+  string gIds = 1;
+  bool noAmend = 2;
+}
+
+message InoutByGroupsResponse {
+  SummaryTotal total = 1;
+  repeated InoutByGroupsList list = 2;
+}
+
+message InoutByGroupsList {
+  int64 gid = 1;
+  string   name = 2;
+  repeated SummaryList data = 3;
+}
+
+enum BasedOnOrderEnum {
+  NotBasedOnOrder = 0;
+  BasedOnOrder = 1;
+  All = 2;
+}
+
+// 终端管理 - 出入园实时统计数据查询请求体
+// basedOnOrder: 2 - 全部，1 - 基于订单核验，0 - 非基于订单核验
+message DeviceJournalStatRequest {
+  int64 sid = 1;
+  repeated int32 nodeId = 2;
+  repeated int32 hour = 3;
+  BasedOnOrderEnum basedOnOrder = 4;
+}
+
+// 终端管理 - 出入园实时统计节点数据
+message DeviceJournalNodeStatDO {
+  int32 in = 1;
+  int32 out = 2;
+}
+
+message DeviceJournalNodeItemDO {
+  int32 nodeId = 1;
+  int32 in = 2;
+  int32 out = 3;
+}
+// 终端管理 - 出入园实时统计数据查询响应体
+message DeviceJournalStatResponse {
+  DeviceJournalNodeStatDO total = 1;
+  repeated DeviceJournalNodeItemDO list = 2;
+}
+
+// 定义 InOutFlow 请求参数
+message InOutCompareRequest {
+  repeated int64 gid = 1;
+  google.protobuf.Timestamp date = 2;
+  google.protobuf.Timestamp compareDate = 3;
+  bool noAmend = 4;
+}
+
+// 定义 InOutCompareResponse 响应体
+message InoutCompareResponse {
+  InoutCompareTotal total = 1;
+  repeated SummaryList list = 2;
+  repeated SummaryList compareList = 3;
+}
+
+message InoutCompareTotal {
+  SummaryTotal total = 1;
+  int64 CompareIn = 4;
+  int64 CompareOut = 5;
+  int64 CompareHold = 6;
+}

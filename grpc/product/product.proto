@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+import "cmd/odas/grpc/common.proto";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/product;product";
+
+// 定义渠道服务
+service ProductService {
+  // 定义 Rank 方法 ， 接受 RankRequest 消息 ， 返回 RankResponse  消息
+  rpc Rank(RankRequest) returns (RankResponse) {}
+
+  // 定义 TicketList 方法 ， 接受 TicketListRequest 消息 ， 返回 TicketListResponse  消息
+  rpc TicketList (ProductTicketListRequest) returns (ProductTicketListResponse) {}
+
+  // 定义 SalesDetail 方法 ， 接受 SalesDetailRequest 消息 ， 返回 SalesDetailResponse  消息
+  rpc SalesDetail (SalesDetailRequest) returns (SalesDetailResponse) {}
+}
+
+// 定义StartEndRequest消息
+message RankRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  int64 limit = 2;
+}
+
+// 定义 RankBySidResponse 响应
+message RankResponse {
+  repeated RankListResponse list = 1;
+}
+
+message RankListResponse {
+  int64 ticketId = 1;
+  string ticketName = 2;
+  int64 count = 3;
+  int64 amount = 4;
+  double rate = 5;
+}
+
+
+// 定义TicketListBySid请求参数和响应
+message ProductTicketListRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  PassedCompareTimeSpanV4Request compare = 2;
+  int64 page = 3;
+  int64 pageSize = 4;
+}
+
+message ProductTicketListResponse {
+  repeated TicketList list = 1;
+  Pagination pagination = 2;
+}
+
+message TicketList {
+  int64 ticketId = 1;
+  string ticketName = 2;
+  int64 Count = 3;
+  double CompareCountRate = 4;
+  int64 Amount = 5;
+  double CompareAmountRate = 6;
+}
+
+// 定义 SalesDetail 请求参数
+message SalesDetailRequest {
+  PassedTimeSpanV4Request request = 1;
+  repeated int64 ticketId = 2;
+}
+
+// 定义 SalesDetail 响应体
+message SalesDetailResponse {
+  repeated SalesDetailList salesDetailList = 1;
+}
+
+message SalesDetailList {
+  int64 ticketId = 1;
+  repeated AmountTrend amountTrend = 2;
+  repeated ChannelList channelList = 3;
+}
+
+message AmountTrend {
+  string timeRange = 1;
+  int64 ticketCount = 2;
+}
+
+message ChannelList {
+  string channelName = 1;
+  int64 ticketCount = 2;
+  double rate = 3;
+}

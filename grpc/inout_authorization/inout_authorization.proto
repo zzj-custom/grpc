@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/inout_authorization;inout_authorization";
+
+// 定义管理出入园统计组授权服务
+service InoutAuthorizationService {
+  // 创建授权
+  rpc Create (InoutAuthorizationCreateRequest) returns (InoutAuthorizationResponse) {}
+  // 编辑授权
+  rpc Update (InoutAuthorizationUpdateRequest) returns (InoutAuthorizationResponse) {}
+  // 删除授权
+  rpc Delete (InoutAuthorizationDeleteRequest) returns (InoutAuthorizationResponse) {}
+  // 查询授权
+  rpc List (InoutAuthorizationListRequest) returns (InoutAuthorizationListResponse) {}
+}
+
+// 定义创建请求参数和响应
+message InoutAuthorizationCreateRequest {
+  int64 granter = 1;
+  int64 grantee = 2;
+  int64 groupId = 3;
+}
+
+message InoutAuthorizationResponse {
+  int64 code = 1;
+  string msg = 2;
+}
+
+// 定义编辑请求参数和响应
+message InoutAuthorizationUpdateRequest {
+  int64 id = 1;
+  int64 groupId = 4;
+}
+
+// 定义删除请求参数和响应
+message InoutAuthorizationDeleteRequest {
+  int64 id = 1;
+}
+
+// 定义查询请求参数和响应
+message InoutAuthorizationListRequest {
+  int64 page = 1;
+  int64 pageSize = 2;
+  int64 granter = 3;
+  int64 grantee = 4;
+  int64 groupId = 5;
+}
+
+message ListData {
+  int64 id = 1;
+  int64 granter = 2;
+  int64 grantee = 3;
+  int64 groupId = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message InoutAuthorizationPagination {
+  int64 page = 1;
+  int64 pageSize = 2;
+  int64 total = 3;
+  int64 pages = 4;
+}
+
+message InoutAuthorizationListResponse {
+  repeated ListData list = 1;
+  InoutAuthorizationPagination pagination = 2;
+}

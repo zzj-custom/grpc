@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "cmd/odas/grpc/common.proto";
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/order;order";
+
+// 定义渠道服务
+service OrderService {
+  // 定义 BookingOrderList 方法，接受 PassedTimeSpanByLidAndSidV4Request 消息， 并返回BookingOrderListResponse消息
+  rpc BookingOrderList (PassedTimeSpanByOrderTypeV4Request) returns (BookingOrderListResponse) {}
+
+  // 定义 TeamOrder 方法，接受 TeamOrderRequest 消息， 并返回 TeamOrderResponse 消息
+  rpc TeamOrder (TeamOrderRequest) returns (TeamOrderResponse) {}
+
+  // 定义 Summary 方法，接受 SummaryRequest 消息， 并返回 SummaryResponse 消息
+  rpc Summary(OrderSummaryRequest) returns (OrderSummaryResponse) {}
+
+  // 定义 Hot 方法，接受 HotRequest 消息， 并返回 HotResponse 消息
+  rpc Hot(HotRequest) returns (HotResponse) {}
+
+  // 定义 ToiSummary 方法，接受 PassedTimeSpanByLidAndSidV4Request 消息， 并返回 ToiSummaryResponse 消息
+  rpc ToiSummary(PassedTimeSpanByOrderTypeV4Request) returns (ToiSummaryResponse) {}
+
+  // 定义 PreBookingByType 方法，接受 PreBookingRequest 消息， 并返回 PreBookingByTypeResponse 消息
+  rpc PreBookingByType(PassedTimeSpanByOrderTypeV4Request) returns (PreBookingByTypeResponse){}
+
+  // 定义 PreBookingSummary 方法，接受 PreBookingRequest 消息， 并返回 PreBookingSummaryResponse 消息
+  rpc PreBookingSummary(PassedTimeSpanByOrderTypeV4Request) returns (PreBookingSummaryResponse){}
+}
+
+
+// 定义TrendBySidResponse消息返回格式
+message BookingOrderListResponse{
+  OrderSummaryV4 total = 1;
+  repeated OrderSummaryByTimeV4 detail = 2;
+}
+
+// 定义 BookingOrderListByLidsRequest 请求参数
+message BookingOrderListByLidsRequest {
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+  string lids = 3;
+}
+
+// 定义 TeamOrder 请求参数
+message TeamOrderRequest {
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  PassedCompareTimeSpanV4Request compare = 2;
+}
+
+//  定义 TeamOrder 方法的response
+message TeamOrderResponse{
+  TeamTotal total = 1;
+  TeamDetail detail = 2;
+}
+
+message TeamTotal{
+  int64 team = 1;
+  int64 teamTicket = 2;
+  int64 teamVerify = 3;
+}
+
+message TeamDetail{
+  repeated TeamTrend teamTrend = 1;
+  repeated TeamTicketTrend teamTicketTrend = 2;
+  repeated TeamAmountTrend teamAmountTrend = 3;
+}
+
+message TeamTrend{
+  int64 time = 1;
+  int64 team = 2;
+  double compareTeam = 3;
+}
+
+message TeamTicketTrend{
+  int64 time = 1;
+  int64 ticket = 2;
+  double compareTicket = 3;
+}
+
+message TeamAmountTrend{
+  int64 time = 1;
+  int64 Amount = 2;
+  double compareAmount = 3;
+}
+
+
+message OrderSummaryRequest{
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  bool compare = 2;
+}
+
+// 定义Summary的response
+message OrderSummaryResponse{
+  int64 orderTicket = 1;
+  double momOrderTicket = 2;
+  double yoyOrderTicket = 3;
+  int64 verifyTicket = 4;
+  double momVerifyTicket = 5;
+  double yoyVerifyTicket = 6;
+  int64 refundTicket = 7;
+  double momRefundTicket = 8;
+  double yoyRefundTicket = 9;
+  int64 orderAmount = 10;
+  double momOrderAmount = 11;
+  double yoyOrderAmount = 12;
+  int64 verifyAmount = 13;
+  double momVerifyAmount = 14;
+  double yoyVerifyAmount = 15;
+  int64 refundAmount = 16;
+  double momRefundAmount = 17;
+  double yoyRefundAmount = 18;
+}
+
+
+// 定义 Hot 的request
+message HotRequest{
+  PassedTimeSpanByOrderTypeV4Request request = 1;
+  int64 limit = 3;
+}
+
+// 定义 Hot 的response
+message HotResponse {
+  repeated HotSummary hotSummary = 1;
+}
+
+message HotSummary {
+  int64 lid = 1 ;
+  int64 ticketCount = 2;
+  int64 orderCount = 3;
+  int64 amount = 4;
+  double unitPrice = 5;
+}
+
+// 定义 ToiSummaryResponse
+message ToiSummaryResponse {
+  ToiTotal total = 1;
+  ToiData team = 2;
+  ToiData Individual = 3;
+}
+
+message ToiTotal {
+  int64 order = 1;
+  int64 ticket = 2;
+  int64 amount = 3;
+}
+
+message  ToiData {
+  int64 order = 1;
+  int64 ticket = 2;
+  int64 amount = 3;
+  double orderRate = 4;
+  double ticketRate = 5;
+  double amountRate = 6;
+}
+
+message PreBookingByTypeResponse {
+  PreBookingTotal total = 1;
+  repeated PreBookingList list = 2;
+}
+
+message PreBookingTotal {
+  int64 orderNum =1;
+  int64 orderTicket = 2;
+  int64 orderAmount = 3;
+}
+
+message PreBookingList{
+  string typeName = 1;
+  double percent = 2;
+  PreBookingTotal preBookingTotal = 3;
+}
+
+message PreBookingSummaryResponse {
+  PreBookingTotal total = 1;
+  repeated PreBookingSummaryList list = 2;
+}
+message PreBookingSummaryList {
+  string time = 1;
+  PreBookingTotal total = 2;
+}

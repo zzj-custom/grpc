@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/amendment;amendment";
+
+// 定义优化客流服务
+service AmendmentService {
+  // 操作优化客流
+  rpc Operate (OperateRequest) returns (OperateResponse) {}
+
+  // 查询优化客流
+  rpc Search (SearchRequest) returns (SearchResponse) {}
+
+  // 删除优化客流
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {}
+}
+
+// 定义 OperateRequest 消息
+message OperateRequest {
+  // 字段
+  int64 gid = 1;
+  optional int64 switch = 2;
+  int64 type = 3;
+  optional int64 inPlus = 4;
+  optional int64 outPlus = 5;
+  float inCoefficient = 6;
+  float outCoefficient = 7;
+}
+
+// 定义 OperateResponse 消息返回格式
+message OperateResponse{
+  string msg = 1;
+}
+
+//  定义 SearchRequest 消息体
+message SearchRequest {
+  int64 sid = 1  ;
+  optional int64 switch = 2;
+  int64 page = 3;
+  int64 pageSize = 4;
+}
+
+// 定义 SearchResponse 消息体
+message SearchResponse {
+  repeated List list = 1;
+  AmendmentPagination pagination = 2;
+}
+
+message List {
+  int64 id = 1;
+  int64 gid = 2;
+  int64 switch = 3;
+  int64 type = 4;
+  int64 inPlus = 5;
+  int64 outPlus = 6;
+  float inCoefficient = 7;
+  float outCoefficient = 8;
+  string  downTime = 9;
+  string createdAt = 10;
+  string updatedAt = 11;
+}
+
+message AmendmentPagination {
+  int64 page = 1;
+  int64 pageSize = 2;
+  int64 total = 3;
+  int64 pages = 4;
+}
+
+// 定义 DeleteRequest 消息
+message DeleteRequest {
+  int64 id = 1;
+  int64 sid = 2;
+}
+
+message DeleteResponse {
+  string msg = 1;
+}
+
+

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/section;section";
+
+// 定义分时预约服务
+service SectionDeductionService {
+  // 获取今日分时预约
+  rpc TodaySectionDeductionDetail (TodaySectionDeductionRequest) returns (TodaySectionDeductionResponse) {}
+}
+
+// 定义 VerifiedSummaryRequest 消息
+message TodaySectionDeductionRequest {
+  // 字段
+  repeated int64 lid = 1;
+}
+
+// 定义 TodaySectionDeductionResponse 消息返回格式
+message TodaySectionDeductionResponse{
+  repeated SectionDeductionList list = 1;
+}
+
+message SectionDeductionList {
+  string beginDate = 1;
+  string beginTime = 2;
+  string endDate = 3;
+  string endTime = 4;
+  int64 reservedStorage = 5;
+  int64 ruleId = 6;
+  string ruleName = 7;
+  int64 sectionAheadCheckInTime = 8;
+  int64 sectionDelayCheckInTime = 9;
+  int64 sectionTimeId = 10;
+  string shop = 11;
+  int64 soldStorage = 12;
+  int64 ticketGroup = 13;
+  repeated int64 ticketIds = 14;
+  repeated string ticketNames = 15;
+  int64 totalStorage = 16;
+}
+
+
+

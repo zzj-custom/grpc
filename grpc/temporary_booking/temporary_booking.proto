@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/temporary_booking;temporary_booking";
+
+// 定义临时下单服务
+service TemporaryBookingService {
+  // 临时下单/预定实时数据（最近24小时的数据）
+  rpc LastDayTemporaryBookingSummary (TemporaryBookingSummaryRequest) returns (TemporaryBookingSummaryResponse) {}
+}
+
+// 定义summary的请求参数和响应
+message TemporaryBookingSummaryRequest {
+  int64 sid = 1;
+}
+
+message TemporaryBookingSummaryResponse {
+  TemporaryBookingSummaryTotal total = 1;
+  repeated TemporaryBookingSummaryList list = 2;
+}
+
+message TemporaryBookingSummaryTotal {
+  int64 temp = 1;
+  int64 booking = 2;
+}
+
+message TemporaryBookingSummaryList {
+  string time = 1;
+  int64 temp = 2;
+  int64 booking = 3;
+}

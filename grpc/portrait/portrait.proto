@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+import "cmd/odas/grpc/common.proto";
+
+//path 表示生成的go文件的存放地址，会自动生成目录的。
+//name 表示生成的go文件所属的包名
+option go_package = "odas/cmd/odas/grpc/portrait;portrait";
+
+// 定义渠道服务
+service PortraitService {
+    // 定义方法 AgeSummary 接受 AgeRequest 消息，返回 QueryAgeSummaryBySidResponse 消息
+   rpc AgeSummary (AgeRequest) returns (AgeSummaryResponse) {}
+
+    //定义方法 Fellow 接受 Request 消息，返回 FellowResponse 消息
+   rpc Fellow (FellowRequest) returns (FellowResponse) {}
+
+    //定义方法 PaymentMethod 接受 Request 消息，返回 PaymentMethod 消息
+   rpc PaymentMethod (FellowRequest) returns (PaymentMethodResponse) {}
+
+    //定义方法 CityRankBySid 接受 CityRankRequest 消息，返回 CityRankResponse 消息
+   rpc CityRank (CityRankRequest) returns (CityRankResponse) {}
+
+    //定义方法 ProvinceRank 接受 ProvinceRankRequest 消息，返回 ProvinceRankResponse 消息
+    rpc ProvinceRank (ProvinceRankRequest) returns (ProvinceRankResponse) {}
+
+    // 定义方法 AgeCompareSummary 接受 AgeRequest 消息，返回 AgeCompareSummaryBySidResponse 消息
+    rpc AgeCompareSummary (AgeCompareRequest) returns (AgeCompareSummaryResponse) {}
+}
+
+message FellowRequest {
+    PassedTimeSpanByOrderTypeV4Request request = 1;
+    string province = 2;
+}
+
+message AgeRequest {
+    PassedTimeSpanByOrderTypeV4Request request = 1;
+    string province = 2;
+    bool unknown = 3;
+}
+
+message AgeSummaryResponse {
+    AgeSummaryTotal total = 1;
+    repeated AgeSummaryList list = 2;
+}
+
+message AgeSummaryList {
+    string ageGroup = 1;
+    int64 female = 2;
+    int64 male = 3;
+}
+
+message AgeSummaryTotal {
+    int64 total = 1;
+    int64 male = 2;
+    int64 female = 3;
+}
+
+message FellowListResponse {
+    string name = 1;
+    int64 count = 2;
+    double rate = 3;
+}
+
+message FellowResponse {
+    int64 total = 1;
+    repeated FellowListResponse list = 2;
+}
+
+message PaymentMethodListResponse {
+    string channel = 1;
+    int64 total = 2;
+    double rate = 3;
+}
+
+message PaymentMethodResponse {
+    repeated PaymentMethodListResponse list = 1;
+}
+
+message CityRankRequest {
+    PassedTimeSpanByOrderTypeV4Request request = 1;
+    PassedCompareTimeSpanV4Request compare = 2;
+    string province = 3;
+    int64 limit = 4;
+    bool unknown = 5;
+}
+
+message CityRankListResponse {
+    string city = 1;
+    int64 total = 2;
+    double compareTotalRate = 3;
+    double rate = 4;
+}
+
+message CityRankResponse {
+    repeated CityRankListResponse list = 1;
+}
+
+
+message ProvinceRankRequest {
+    PassedTimeSpanByOrderTypeV4Request request = 1;
+    PassedCompareTimeSpanV4Request compare = 2;
+    int64 limit =3;
+    bool unknown = 4;
+}
+
+message ProvinceRankListResponse {
+    string province = 1;
+    int64 total = 2;
+    double compareTotalRate = 3;
+    double rate = 4;
+}
+
+message ProvinceRankResponse {
+    repeated ProvinceRankListResponse list = 1;
+}
+
+// 定义对比年龄性别请求参数 AgeCompareRequest
+message AgeCompareRequest {
+    PassedTimeSpanByOrderTypeV4Request request = 1;
+    PassedCompareTimeSpanV4Request compare = 2;
+    bool unknown = 3;
+    string province = 4;
+}
+
+// 定义对比年龄性别响应体 AgeCompareResponse
+message AgeCompareSummaryResponse {
+    AgeCompareSummaryTotal total = 1;
+    repeated AgeSummaryList list = 2;
+    repeated AgeSummaryList compareList = 3;
+}
+
+message AgeCompareSummaryTotal {
+    int64 total = 1;
+    int64 compareTotal = 2;
+    int64 male = 3;
+    int64 compareMale = 4;
+    int64 female = 5;
+    int64 compareFemale = 6;
+}
