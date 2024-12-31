@@ -72,7 +72,7 @@ func (c *amendmentServiceClient) Delete(ctx context.Context, in *DeleteRequest, 
 }
 
 // AmendmentServiceServer is the server API for AmendmentService service.
-// All implementations must embed UnimplementedAmendmentServiceServer
+// All implementations should embed UnimplementedAmendmentServiceServer
 // for forward compatibility
 type AmendmentServiceServer interface {
 	// 操作优化客流
@@ -81,10 +81,9 @@ type AmendmentServiceServer interface {
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 	// 删除优化客流
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	mustEmbedUnimplementedAmendmentServiceServer()
 }
 
-// UnimplementedAmendmentServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedAmendmentServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedAmendmentServiceServer struct {
 }
 
@@ -97,7 +96,6 @@ func (UnimplementedAmendmentServiceServer) Search(context.Context, *SearchReques
 func (UnimplementedAmendmentServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedAmendmentServiceServer) mustEmbedUnimplementedAmendmentServiceServer() {}
 
 // UnsafeAmendmentServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to AmendmentServiceServer will
